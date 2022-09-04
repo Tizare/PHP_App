@@ -1,0 +1,17 @@
+{
+    "name": "tizare/App",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "PHP2\\App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Tizare"
+        }
+    ],
+    "require": {
+        "fakerphp/faker": "^1.20"
+    }
+}
