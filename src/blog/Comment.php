@@ -2,20 +2,39 @@
 
 namespace PHP2\App\blog;
 
+use PHP2\App\Traits\Id;
+use PHP2\App\Traits\UserId;
+
 class Comment
 {
-    private int $id;
-    private int $userId;
-    private int $blogId;
-    private string $text;
+    use Id;
+    use UserId;
+    private int $postId;
+    private string $comment;
 
-    public function __construct($text)
+    public function __construct($comment)
     {
-        $this->text = $text;
+        $this->comment = $comment;
+    }
+
+    public function setPostId(int $id): self
+    {
+        $this->postId = $id;
+        return $this;
+    }
+
+    public function getPostId(): int
+    {
+        return $this->postId;
+    }
+
+    public function getComment(): string
+    {
+        return $this->comment;
     }
 
     public function __toString()
     {
-        return $this->text;
+        return $this->comment;
     }
 }
