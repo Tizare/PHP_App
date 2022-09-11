@@ -1,9 +1,10 @@
 {
-    "name": "tizare/App",
+    "name": "tizare/app",
     "type": "project",
     "autoload": {
         "psr-4": {
-            "PHP2\\App\\": "src/"
+            "PHP2\\App\\": "src/",
+            "Test\\": "tests/"
         },
         "files": [
             "database/config.php"
@@ -15,7 +16,14 @@
         }
     ],
     "require": {
-        "fakerphp/faker": "^1.20",
         "ext-pdo": "*"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.20",
+        "phpunit/phpunit": "^9.5"
+    },
+    "scripts": {
+        "test": "phpunit tests --testdox --colors"
     }
 }
+
