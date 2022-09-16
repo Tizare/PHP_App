@@ -16,7 +16,9 @@
         }
     ],
     "require": {
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "ext-mbstring": "*",
+        "ext-json": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.20",
