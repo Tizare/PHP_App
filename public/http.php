@@ -1,9 +1,16 @@
 <?php
 
+use PHP2\App\Handler\Blog\CommentLikeFromRequest;
 use PHP2\App\Handler\Blog\CreateCommentFromRequest;
 use PHP2\App\Handler\Blog\CreatePostFromRequest;
+use PHP2\App\Handler\Blog\CreatePostLikeFromRequest;
 use PHP2\App\Handler\Blog\DeletePostFromRequest;
+use PHP2\App\Handler\Blog\FindLikesByCommentId;
+use PHP2\App\Handler\Blog\FindLikesByPostId;
+use PHP2\App\Handler\Blog\FindPostById;
 use PHP2\App\Handler\Users\FindByUserName;
+use PHP2\App\Repositories\CommentRepository;
+use PHP2\App\Repositories\LikeRepository;
 use PHP2\App\Repositories\PostRepository;
 use PHP2\App\Repositories\UserRepository;
 use PHP2\App\Request\Request;
@@ -30,15 +37,19 @@ try {
 
 $routes = [
     'GET' => [
-        '/users/show' => new FindByUserName(new UserRepository()),
-//        '/posts/show' => new FindPostById(new PostRepository()),
+        '/user/show' => new FindByUserName(new UserRepository()),
+        '/post/like' => new FindLikesByPostId(new LikeRepository()),
+        '/post/comment/like' => new FindLikesByCommentId(new LikeRepository()),
+        '/post/show' => new FindPostById(new PostRepository()),
     ],
     'POST' => [
         '/post/create' => new CreatePostFromRequest(new UserRepository()),
-        '/posts/comment' => new CreateCommentFromRequest(new UserRepository(), new PostRepository()),
+        '/post/comment' => new CreateCommentFromRequest(new UserRepository(), new PostRepository()),
+        '/post/like'=> new CreatePostLikeFromRequest(new PostRepository(), new UserRepository()),
+        '/post/comment/like' => new CommentLikeFromRequest(new UserRepository(), new CommentRepository())
     ],
     'DELETE' => [
-        '/posts' => new DeletePostFromRequest(new PostRepository()),
+        '/post' => new DeletePostFromRequest(new PostRepository()),
     ]
 ];
 

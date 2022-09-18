@@ -6,6 +6,7 @@ use PHP2\App\Argument\Argument;
 use PHP2\App\blog\Post;
 use PHP2\App\blog\Comment;
 use PHP2\App\Commands\CreatePostCommand;
+use PHP2\App\Commands\CreatePostLikeCommand;
 use PHP2\App\Commands\CreateUserCommand;
 use PHP2\App\Exceptions\CommandException;
 use PHP2\App\Repositories\CommentRepository;
@@ -49,10 +50,11 @@ $postRepository = new PostRepository();
 //die();
 
 $command = new CreateUserCommand($userRepository);
-$command2 = new CreatePostCommand($postRepository, $userRepository);
+//$command2 = new CreatePostCommand($postRepository, $userRepository);
+$command3 = new CreatePostLikeCommand($postRepository, $userRepository);
 
 try {
-    $command2->handle(Argument::fromArgv($argv));
+    $command3->handle(Argument::fromArgv($argv));
     echo "done" . PHP_EOL;
 } catch (CommandException $commandException) {
     echo $commandException->getMessage();

@@ -31,7 +31,7 @@ class DeletePostCommand implements CreateCommandsInterface
     {
         $postId = $argument->get('postId');
 
-        /** TODO - удаление комментов к посту! */
+        // TODO: - удаление комментов к посту!
 
         if ($this->postNotExist($postId)) {
             throw new CommandException("Post with Id - $postId not exist." . PHP_EOL);
