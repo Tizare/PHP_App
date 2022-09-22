@@ -5,23 +5,24 @@ namespace PHP2\App\Commands;
 use PDO;
 use PHP2\App\Argument\Argument;
 use PHP2\App\Connection\ConnectorInterface;
-use PHP2\App\Connection\SqLiteConnector;
 use PHP2\App\Exceptions\CommandException;
 use PHP2\App\Exceptions\PostNotFoundException;
-use PHP2\App\Repositories\PostRepository;
 use PHP2\App\Repositories\PostRepositoryInterface;
+use Psr\Log\LoggerInterface;
 
 class DeletePostCommand implements CreateCommandsInterface
 {
     private PostRepositoryInterface $postRepository;
     private PDO $connection;
-    private ?ConnectorInterface $connector;
+    private ConnectorInterface $connector;
+    private LoggerInterface $logger;
 
-    public function __construct(PostRepositoryInterface $postRepository = null)
+    public function __construct(PostRepositoryInterface $postRepository, ConnectorInterface $connector, LoggerInterface $logger)
     {
-        $this->postRepository = $postRepository ?? new PostRepository();
-        $this->connector = $connector ?? new SqLiteConnector();
+        $this->postRepository = $postRepository;
+        $this->connector = $connector;
         $this->connection = $this->connector->getConnection();
+        $this->logger = $logger;
     }
 
     /**
@@ -29,6 +30,7 @@ class DeletePostCommand implements CreateCommandsInterface
      */
     public function handle(Argument $argument): void
     {
+        $this->logger->info("Begin delete Post");
         $postId = $argument->get('postId');
 
         // TODO: - удаление комментов к посту!
@@ -40,6 +42,7 @@ class DeletePostCommand implements CreateCommandsInterface
                 "DELETE FROM post WHERE id = :postId"
             );
             $statement->execute([':postId' => $postId]);
+            $this->logger->info("Post $postId deleted");
         }
     }
 

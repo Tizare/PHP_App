@@ -5,23 +5,25 @@ namespace PHP2\App\Commands;
 use PHP2\App\Argument\Argument;
 use PHP2\App\Connection\ConnectorInterface;
 use PDO;
-use PHP2\App\Connection\SqLiteConnector;
 use PHP2\App\Exceptions\CommandException;
 use PHP2\App\Exceptions\UserNotFoundException;
-use PHP2\App\Repositories\UserRepository;
 use PHP2\App\Repositories\UserRepositoryInterface;
+use Psr\Log\LoggerInterface;
 
 class CreatePostCommand implements CreateCommandsInterface
 {
     private UserRepositoryInterface $userRepository;
     private PDO $connection;
-    private ?ConnectorInterface $connector;
+    private ConnectorInterface $connector;
+    private LoggerInterface $logger;
 
-    public function __construct(UserRepositoryInterface $userRepository = null)
+    public function __construct(UserRepositoryInterface $userRepository, ConnectorInterface $connector,
+                                LoggerInterface $logger)
     {
-        $this->userRepository = $userRepository ?? new UserRepository();
-        $this->connector = $connector ?? new SqLiteConnector();
+        $this->userRepository = $userRepository;
+        $this->connector = $connector;
         $this->connection = $this->connector->getConnection();
+        $this->logger = $logger;
     }
 
    /**
@@ -29,12 +31,13 @@ class CreatePostCommand implements CreateCommandsInterface
     */
     public function handle(Argument $argument): void
     {
+        $this->logger->info("Begin create Post");
         $userId = $argument->get('userId');
         $title = $argument->get('title');
         $post = $argument->get('post');
 
         if($this->userIdNotExist($userId)){
-            throw new CommandException("User with Id - $userId not found" . PHP_EOL);
+            throw new CommandException("User with Id - $userId not found");
         } else {
             $statement = $this->connection->prepare(
                 'INSERT INTO post (user_id, title, post) 
@@ -45,6 +48,7 @@ class CreatePostCommand implements CreateCommandsInterface
                 ':title' => $title,
                 ':post' => $post
             ]);
+            $this->logger->info("Post created (userId = $userId, title = $title");
         }
     }
 

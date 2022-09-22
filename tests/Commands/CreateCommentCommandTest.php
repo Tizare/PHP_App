@@ -5,7 +5,7 @@ namespace Test\Commands;
 use PHP2\App\Argument\Argument;
 use PHP2\App\blog\Post;
 use PHP2\App\Commands\CreateCommentCommand;
-use PHP2\App\Commands\CreatePostCommand;
+use PHP2\App\Connection\SqLiteConnector;
 use PHP2\App\Exceptions\ArgumentException;
 use PHP2\App\Exceptions\CommandException;
 use PHP2\App\Exceptions\PostNotFoundException;
@@ -14,6 +14,7 @@ use PHP2\App\Repositories\PostRepositoryInterface;
 use PHP2\App\Repositories\UserRepositoryInterface;
 use PHP2\App\user\User;
 use PHPUnit\Framework\TestCase;
+use Test\DummyLogger;
 
 class CreateCommentCommandTest extends TestCase
 {
@@ -57,7 +58,8 @@ class CreateCommentCommandTest extends TestCase
 
     public function testItThrowsAnExceptionWhenUserIdAndPostIdNotExist(): void
     {
-        $command = new CreateCommentCommand($this->makePostRepositoryDummy(), new DummyUsersRepository());
+        $command = new CreateCommentCommand($this->makePostRepositoryDummy(), new DummyUsersRepository(),
+            new SqLiteConnector((databaseConfig()['sqlite']['DATABASE_URL'])), new DummyLogger());
 
         $this->expectException(CommandException::class);
         $this->expectExceptionMessage("User with Id - 777 or Post with Id - 666 not found" );
@@ -71,7 +73,8 @@ class CreateCommentCommandTest extends TestCase
 
     public function testItThrowsAnExceptionWhenUserIdExistButPostIdNotExist(): void
     {
-        $command = new CreateCommentCommand($this->makePostRepositoryDummy(), $this->makeUserRepository());
+        $command = new CreateCommentCommand($this->makePostRepositoryDummy(), $this->makeUserRepository(),
+            new SqLiteConnector((databaseConfig()['sqlite']['DATABASE_URL'])), new DummyLogger());
 
         $this->expectException(CommandException::class);
         $this->expectExceptionMessage("User with Id - 777 or Post with Id - 666 not found" );
@@ -85,7 +88,8 @@ class CreateCommentCommandTest extends TestCase
 
     public function testItThrowsAnExceptionWhenUserIdNotExistButPostIdExist(): void
     {
-        $command = new CreateCommentCommand($this->makePostRepository(), new DummyUsersRepository());
+        $command = new CreateCommentCommand($this->makePostRepository(), new DummyUsersRepository(),
+            new SqLiteConnector((databaseConfig()['sqlite']['DATABASE_URL'])), new DummyLogger());
 
         $this->expectException(CommandException::class);
         $this->expectExceptionMessage("User with Id - 777 or Post with Id - 666 not found" );
@@ -99,7 +103,8 @@ class CreateCommentCommandTest extends TestCase
 
     public function testItRequiresUserId(): void
     {
-        $command = new CreateCommentCommand($this->makePostRepository(), $this->makeUserRepository());
+        $command = new CreateCommentCommand($this->makePostRepository(), $this->makeUserRepository(),
+            new SqLiteConnector((databaseConfig()['sqlite']['DATABASE_URL'])), new DummyLogger());
 
         $this->expectException(ArgumentException::class);
         $this->expectExceptionMessage("No such argument - userId");
@@ -113,7 +118,8 @@ class CreateCommentCommandTest extends TestCase
 
     public function testItRequiresPostId(): void
     {
-        $command = new CreateCommentCommand($this->makePostRepository(), $this->makeUserRepository());
+        $command = new CreateCommentCommand($this->makePostRepository(), $this->makeUserRepository(),
+            new SqLiteConnector((databaseConfig()['sqlite']['DATABASE_URL'])), new DummyLogger());
 
         $this->expectException(ArgumentException::class);
         $this->expectExceptionMessage("No such argument - postId");
@@ -127,7 +133,8 @@ class CreateCommentCommandTest extends TestCase
 
     public function testItRequiresComment(): void
     {
-        $command = new CreateCommentCommand($this->makePostRepository(), $this->makeUserRepository());
+        $command = new CreateCommentCommand($this->makePostRepository(), $this->makeUserRepository(),
+            new SqLiteConnector((databaseConfig()['sqlite']['DATABASE_URL'])), new DummyLogger());
 
         $this->expectException(ArgumentException::class);
         $this->expectExceptionMessage("No such argument - comment");

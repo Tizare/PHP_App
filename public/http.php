@@ -1,5 +1,8 @@
 <?php
 
+/** @var ContainerInterface $container */
+/** @var Request $request */
+
 use PHP2\App\Handler\Blog\CommentLikeFromRequest;
 use PHP2\App\Handler\Blog\CreateCommentFromRequest;
 use PHP2\App\Handler\Blog\CreatePostFromRequest;
@@ -9,21 +12,19 @@ use PHP2\App\Handler\Blog\FindLikesByCommentId;
 use PHP2\App\Handler\Blog\FindLikesByPostId;
 use PHP2\App\Handler\Blog\FindPostById;
 use PHP2\App\Handler\Users\FindByUserName;
-use PHP2\App\Repositories\CommentRepository;
-use PHP2\App\Repositories\LikeRepository;
-use PHP2\App\Repositories\PostRepository;
-use PHP2\App\Repositories\UserRepository;
 use PHP2\App\Request\Request;
 use PHP2\App\Exceptions\HttpException;
 use PHP2\App\Response\ErrorResponse;
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
-require_once __DIR__ . '\autoload_runtime.php';
-
-$request = new Request($_GET, $_SERVER, file_get_contents('php://input'));
+$container = require_once __DIR__ . '\autoload_runtime.php';
+$logger = $container->get(LoggerInterface::class);
 
 try {
     $path = $request->path();
 } catch (HttpException $ex) {
+    $logger->warning($ex->getMessage());
     (new ErrorResponse($ex->getMessage()))->send();
     return;
 }
@@ -31,43 +32,49 @@ try {
 try {
     $method = $request->method();
 } catch (HttpException $exception) {
+    $logger->warning($exception->getMessage());
     (new ErrorResponse("Cannot get method"))->send();
     return;
 }
 
 $routes = [
     'GET' => [
-        '/user/show' => new FindByUserName(new UserRepository()),
-        '/post/like' => new FindLikesByPostId(new LikeRepository()),
-        '/post/comment/like' => new FindLikesByCommentId(new LikeRepository()),
-        '/post/show' => new FindPostById(new PostRepository()),
+        '/user/show' => FindByUserName::class,
+        '/post/like' => FindLikesByPostId::class,
+        '/post/comment/like' => FindLikesByCommentId::class,
+        '/post/show' => FindPostById::class,
     ],
     'POST' => [
-        '/post/create' => new CreatePostFromRequest(new UserRepository()),
-        '/post/comment' => new CreateCommentFromRequest(new UserRepository(), new PostRepository()),
-        '/post/like'=> new CreatePostLikeFromRequest(new PostRepository(), new UserRepository()),
-        '/post/comment/like' => new CommentLikeFromRequest(new UserRepository(), new CommentRepository())
+        '/post/create' => CreatePostFromRequest::class,
+        '/post/comment' => CreateCommentFromRequest::class,
+        '/post/like'=> CreatePostLikeFromRequest::class,
+        '/post/comment/like' => CommentLikeFromRequest::class
     ],
     'DELETE' => [
-        '/post' => new DeletePostFromRequest(new PostRepository()),
+        '/post' => DeletePostFromRequest::class,
     ]
 ];
 
 if (!array_key_exists($method, $routes)) {
-    (new ErrorResponse("Such method not found"))->send();
+    $message = "Such method not found";
+    $logger->notice($message);
+    (new ErrorResponse($message))->send();
     return;
 }
 
 if (!array_key_exists($path, $routes[$method])) {
-    (new ErrorResponse('Such path not found'))->send();
+    $message = "Such path not found";
+    $logger->notice($message);
+    (new ErrorResponse($message))->send();
     return;
 }
 
-$action = $routes[$method][$path];
+$action = $container->get(($routes[$method][$path]));
 
 try {
     $response = $action->handle($request);
 } catch (Exception $exception) {
+    $logger->error($exception->getMessage(), ['exception' => $exception]);
     (new ErrorResponse($exception->getMessage()))->send();
 }
 
