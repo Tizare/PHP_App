@@ -4,17 +4,16 @@ namespace PHP2\App\Repositories;
 use PDO;
 use PHP2\App\blog\Comment;
 use PHP2\App\Connection\ConnectorInterface;
-use PHP2\App\Connection\SqLiteConnector;
 use PHP2\App\Exceptions\CommentNotFoundException;
 
 class CommentRepository implements CommentRepositoryInterface
 {
     private PDO $connection;
-    private ?ConnectorInterface $connector;
+    private ConnectorInterface $connector;
 
-    public function __construct()
+    public function __construct(ConnectorInterface $connector)
     {
-        $this->connector = $connector ?? new SqLiteConnector();
+        $this->connector = $connector;
         $this->connection = $this->connector->getConnection();
     }
 

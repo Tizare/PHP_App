@@ -3,7 +3,6 @@
 namespace PHP2\App\Repositories;
 
 use PHP2\App\Connection\ConnectorInterface;
-use PHP2\App\Connection\SqLiteConnector;
 use PHP2\App\Exceptions\UserNotFoundException;
 use PHP2\App\user\User;
 use PDO;
@@ -11,11 +10,11 @@ use PDO;
 class UserRepository implements UserRepositoryInterface
 {
     private PDO $connection;
-    private ?ConnectorInterface $connector = null;
+    private ConnectorInterface $connector;
 
-    public function __construct()
+    public function __construct(ConnectorInterface $connector)
     {
-        $this->connector = $connector ?? new SqLiteConnector();
+        $this->connector = $connector;
         $this->connection = $this->connector->getConnection();
     }
 
@@ -60,7 +59,7 @@ class UserRepository implements UserRepositoryInterface
         $userObj = $statement->fetch(PDO::FETCH_OBJ);
 
         if(!$userObj) {
-            throw new UserNotFoundException("User with username - $username already exist" . PHP_EOL);
+            throw new UserNotFoundException("User with username - $username not exist" . PHP_EOL);
         }
 
         return $this->mapUser($userObj);

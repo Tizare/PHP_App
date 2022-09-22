@@ -11,6 +11,7 @@ use PHP2\App\Response\ErrorResponse;
 use PHP2\App\Response\SuccessfulResponse;
 use PHP2\App\user\User;
 use PHPUnit\Framework\TestCase;
+use Test\DummyLogger;
 
 class FindByUserNameHandlerTest extends TestCase
 {
@@ -28,7 +29,7 @@ class FindByUserNameHandlerTest extends TestCase
 
             public function get(int $id): User
             {
-                // TODO: Implement get() method.
+                //
             }
 
             public function getUserByUsername(string $username): User
@@ -55,8 +56,9 @@ class FindByUserNameHandlerTest extends TestCase
         $request = new Request([], [], '');
 
         $usersRepository = $this->usersRepository([]);
+        $dummyLogger = new DummyLogger();
 
-        $action = new FindByUserName($usersRepository);
+        $action = new FindByUserName($usersRepository, $dummyLogger);
 
         $response = $action->handle($request);
 
@@ -78,8 +80,9 @@ class FindByUserNameHandlerTest extends TestCase
         $request = new Request(['username' => 'ivan'], [], '');
 
         $usersRepository = $this->usersRepository([]);
+        $dummyLogger = new DummyLogger();
 
-        $action = new FindByUserName($usersRepository);
+        $action = new FindByUserName($usersRepository, $dummyLogger);
 
         $response = $action->handle($request);
 
@@ -101,8 +104,9 @@ class FindByUserNameHandlerTest extends TestCase
         $request = new Request(['username' => 'ivan'], [], '');
 
         $usersRepository = $this->usersRepository([new User('ivan', 'Ivan', 'Nikitin')]);
+        $dummyLogger = new DummyLogger();
 
-        $action = new FindByUserName($usersRepository);
+        $action = new FindByUserName($usersRepository, $dummyLogger);
 
         $response = $action->handle($request);
 

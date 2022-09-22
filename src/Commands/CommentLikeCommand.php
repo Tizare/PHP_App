@@ -5,15 +5,13 @@ namespace PHP2\App\Commands;
 use PDO;
 use PHP2\App\Argument\Argument;
 use PHP2\App\Connection\ConnectorInterface;
-use PHP2\App\Connection\SqLiteConnector;
 use PHP2\App\Exceptions\CommandException;
 use PHP2\App\Exceptions\CommentNotFoundException;
 use PHP2\App\Exceptions\LikeException;
 use PHP2\App\Exceptions\UserNotFoundException;
-use PHP2\App\Repositories\CommentRepository;
 use PHP2\App\Repositories\CommentRepositoryInterface;
 use PHP2\App\Repositories\LikeRepository;
-use PHP2\App\Repositories\UserRepository;
+use PHP2\App\Repositories\LikeRepositoryInterface;
 use PHP2\App\Repositories\UserRepositoryInterface;
 
 class CommentLikeCommand implements CreateCommandsInterface
@@ -24,12 +22,13 @@ class CommentLikeCommand implements CreateCommandsInterface
     private PDO $connection;
     private ConnectorInterface $connector;
 
-    public function __construct(UserRepositoryInterface $userRepository = null, CommentRepositoryInterface $commentRepository = null)
+    public function __construct(UserRepositoryInterface $userRepository, CommentRepositoryInterface $commentRepository,
+                                LikeRepositoryInterface $likeRepository, ConnectorInterface $connector)
     {
-        $this->commentRepository = $commentRepository ?? new CommentRepository();
-        $this->userRepository = $userRepository ?? new UserRepository();
-        $this->likeRepository = new LikeRepository();
-        $this->connector = $connector ?? new SqLiteConnector();
+        $this->commentRepository = $commentRepository;
+        $this->userRepository = $userRepository;
+        $this->likeRepository = $likeRepository;
+        $this->connector = $connector;
         $this->connection = $this->connector->getConnection();
     }
 
