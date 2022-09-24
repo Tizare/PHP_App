@@ -28,7 +28,8 @@ class CreateUserCommandTest extends TestCase
         $command->handle(new Argument([
                 'username' => 'Ivan',
                 'name' => 'name',
-                'surname' => 'surname'
+                'surname' => 'surname',
+                'password' => 'password'
             ]));
     }
 
@@ -59,7 +60,8 @@ class CreateUserCommandTest extends TestCase
         $command->handle(new Argument([
             'user' => 'Ivan',
             'name' => 'name',
-            'surname' => 'surname'
+            'surname' => 'surname',
+            'password' => 'password'
         ]));
     }
 
@@ -73,7 +75,8 @@ class CreateUserCommandTest extends TestCase
 
         $command->handle(new Argument([
             'username' => 'Ivan',
-            'surname' => 'surname'
+            'surname' => 'surname',
+            'password' => 'password'
         ]));
     }
 
@@ -88,6 +91,22 @@ class CreateUserCommandTest extends TestCase
         $command->handle(new Argument([
             'name' => 'name',
             'username' => 'Ivan',
+            'password' => 'password'
+        ]));
+    }
+
+    public function testItRequiresPassword(): void
+    {
+        $command = new CreateUserCommand($this->makeUsersRepository(),
+            new SqLiteConnector((databaseConfig()['sqlite']['DATABASE_URL'])), new DummyLogger());
+
+        $this->expectException(ArgumentException::class);
+        $this->expectExceptionMessage("No such argument - password");
+
+        $command->handle(new Argument([
+            'username' => 'Ivan',
+            'name' => 'name',
+            'surname' => 'surname',
         ]));
     }
 

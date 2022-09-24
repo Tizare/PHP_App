@@ -32,7 +32,8 @@ class CreatePostCommand implements CreateCommandsInterface
     public function handle(Argument $argument): void
     {
         $this->logger->info("Begin create Post");
-        $userId = $argument->get('userId');
+
+        $userId = $argument->get('authUser');
         $title = $argument->get('title');
         $post = $argument->get('post');
 

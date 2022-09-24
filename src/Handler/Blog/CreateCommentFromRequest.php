@@ -3,6 +3,7 @@
 namespace PHP2\App\Handler\Blog;
 
 use PHP2\App\Argument\Argument;
+use PHP2\App\Authentication\TokenAuthentication;
 use PHP2\App\Commands\CreateCommentCommand;
 use PHP2\App\Connection\ConnectorInterface;
 use PHP2\App\Exceptions\CommandException;
@@ -29,6 +30,7 @@ class CreateCommentFromRequest implements HandlerInterface
 
     public function handle(Request $request): Response
     {
+        /** TODO: make comment from authen */
         try {
             $this->createCommentCommand->handle(new Argument($request->jsonBody()));
         } catch (CommandException $exception) {
