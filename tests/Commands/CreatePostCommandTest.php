@@ -22,19 +22,19 @@ class CreatePostCommandTest extends TestCase
         $this->expectExceptionMessage("User with Id - 777 not found");
 
         $command->handle(new Argument([
-            'userId' => '777',
+            'authUser' => '777',
             'title' => 'title',
             'post' => 'post'
         ]));
     }
 
-    public function testItRequiresUserId(): void
+    public function testItRequiresAuthUser(): void
     {
         $command = new CreatePostCommand(new DummyUsersRepository(),
             new SqLiteConnector((databaseConfig()['sqlite']['DATABASE_URL'])), new DummyLogger());
 
         $this->expectException(ArgumentException::class);
-        $this->expectExceptionMessage("No such argument - userId");
+        $this->expectExceptionMessage("No such argument - authUser");
 
         $command->handle(new Argument([
             'userId' => "",
@@ -52,7 +52,7 @@ class CreatePostCommandTest extends TestCase
         $this->expectExceptionMessage("No such argument - title");
 
         $command->handle(new Argument([
-            'userId' => '777',
+            'authUser' => '777',
             'post' => 'post'
         ]));
     }
@@ -66,7 +66,7 @@ class CreatePostCommandTest extends TestCase
         $this->expectExceptionMessage("No such argument - post");
 
         $command->handle(new Argument([
-            'userId' => '777',
+            'authUser' => '777',
             'title' => 'title',
             'blog' => 'post'
         ]));

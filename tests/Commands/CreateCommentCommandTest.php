@@ -46,7 +46,7 @@ class CreateCommentCommandTest extends TestCase
 
             public function get(int $id): User
             {
-                return new User('username', 'name', 'surname');
+                return new User('username', 'name', 'surname', 'password');
             }
 
             public function getUserByUsername(string $username): User

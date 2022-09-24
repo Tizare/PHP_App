@@ -36,18 +36,22 @@ class CreateUserCommand implements CreateCommandsInterface
         $username = $argument->get('username');
         $name = $argument->get('name');
         $surname = $argument->get('surname');
+        $password = $argument->get('password');
+        $hashPassword = hash("sha256", $username . $password);
 
         if($this->userExist($username)){
             throw new CommandException("User with username - $username is already exist");
         } else {
+
             $statement = $this->connection->prepare(
-                'INSERT INTO user (username, name, surname) 
-                   VALUES (:username, :name, :surname)'
+                'INSERT INTO user (username, name, surname, password) 
+                   VALUES (:username, :name, :surname, :password)'
             );
             $statement->execute([
                 ':username' => $username,
                 ':name' => $name,
-                ':surname' => $surname
+                ':surname' => $surname,
+                ':password' => $hashPassword
             ]);
             $this->logger->info("User create (username = $username");
         }

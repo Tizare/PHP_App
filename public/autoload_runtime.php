@@ -2,9 +2,18 @@
 
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use PHP2\App\Authentication\AuthenticationInterface;
+use PHP2\App\Authentication\PasswordAuthentication;
+use PHP2\App\Authentication\PasswordAuthenticationInterface;
+use PHP2\App\Authentication\TokenAuthentication;
+use PHP2\App\Authentication\TokenAuthenticationInterface;
+use PHP2\App\Commands\CreateAuthTokenCommand;
+use PHP2\App\Commands\CreateAuthTokenCommandInterface;
 use PHP2\App\Connection\ConnectorInterface;
 use PHP2\App\Connection\SqLiteConnector;
 use PHP2\App\Container\DiContainer;
+use PHP2\App\Repositories\AuthTokenRepository;
+use PHP2\App\Repositories\AuthTokenRepositoryInterface;
 use PHP2\App\Repositories\CommentRepository;
 use PHP2\App\Repositories\CommentRepositoryInterface;
 use PHP2\App\Repositories\LikeRepository;
@@ -28,6 +37,10 @@ $container->bind(UserRepositoryInterface::class, UserRepository::class);
 $container->bind(PostRepositoryInterface::class, PostRepository::class);
 $container->bind(CommentRepositoryInterface::class, CommentRepository::class);
 $container->bind(LikeRepositoryInterface::class, LikeRepository::class);
+$container->bind(AuthTokenRepositoryInterface::class, AuthTokenRepository::class);
+$container->bind(PasswordAuthenticationInterface::class, PasswordAuthentication::class);
+$container->bind(CreateAuthTokenCommandInterface::class, CreateAuthTokenCommand::class);
+$container->bind(TokenAuthenticationInterface::class,TokenAuthentication::class);
 $container->bind(LoggerInterface::class,
     (new Logger('php2_logger'))
         ->pushHandler(new StreamHandler(__DIR__ . '/../logs/blog.log'))

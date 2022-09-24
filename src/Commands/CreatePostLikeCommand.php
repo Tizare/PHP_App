@@ -41,7 +41,7 @@ class CreatePostLikeCommand implements CreateCommandsInterface
     public function handle(Argument $argument): void
     {
         $this->logger->info("Begin create Post Like");
-        $userId = $argument->get('userId');
+        $userId = $argument->get('authUser');
         $postId = $argument->get('postId');
 
         if ($this->likeExist($postId, $userId)) {

@@ -20,7 +20,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function mapUser(object $userObj): User
     {
-        $user = new User($userObj->username, $userObj->name, $userObj->surname);
+        $user = new User($userObj->username, $userObj->name, $userObj->surname, $userObj->password);
 
         $user->setId($userObj->id);
 

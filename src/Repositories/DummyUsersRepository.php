@@ -18,6 +18,6 @@ class DummyUsersRepository implements UserRepositoryInterface
 
     public function getUserByUsername(string $username): User
     {
-        return new User('username', 'name', 'surname');
+        return new User('username', 'name', 'surname', 'password');
     }
 }

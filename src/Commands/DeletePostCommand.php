@@ -4,6 +4,7 @@ namespace PHP2\App\Commands;
 
 use PDO;
 use PHP2\App\Argument\Argument;
+use PHP2\App\blog\Post;
 use PHP2\App\Connection\ConnectorInterface;
 use PHP2\App\Exceptions\CommandException;
 use PHP2\App\Exceptions\PostNotFoundException;
@@ -32,11 +33,13 @@ class DeletePostCommand implements CreateCommandsInterface
     {
         $this->logger->info("Begin delete Post");
         $postId = $argument->get('postId');
+        $authUser = $argument->get('authUser');
 
         // TODO: - удаление комментов к посту!
-
-        if ($this->postNotExist($postId)) {
-            throw new CommandException("Post with Id - $postId not exist." . PHP_EOL);
+        $post = $this->postExist($postId);
+        if (!$this->postMayBeDeleted($post, $authUser)) {
+            $this->logger->warning("This user $authUser can not delete this post $postId");
+            throw new CommandException("This user can not delete this post");
         } else {
             $statement = $this->connection->prepare(
                 "DELETE FROM post WHERE id = :postId"
@@ -46,11 +49,22 @@ class DeletePostCommand implements CreateCommandsInterface
         }
     }
 
-    private function postNotExist(string $postId): bool
+    /**
+     * @throws CommandException
+     */
+    private function postExist(string $postId): Post
     {
         try {
-            $this->postRepository->get($postId);
+            $post = $this->postRepository->get($postId);
         } catch (PostNotFoundException $exception) {
+            throw new CommandException("Post with Id - $postId not exist.");
+        }
+        return $post;
+    }
+
+    private function postMayBeDeleted(Post $post, string $userId): bool
+    {
+        if ($post->getUserId() == $userId) {
             return true;
         }
         return false;
