@@ -14,7 +14,7 @@ use PHP2\App\Repositories\LikeRepository;
 use PHP2\App\Repositories\LikeRepositoryInterface;
 use PHP2\App\Repositories\UserRepositoryInterface;
 
-class CommentLikeCommand implements CreateCommandsInterface
+class CommentLikeCommand implements CommentLikeCommandInterface
 {
     private UserRepositoryInterface $userRepository;
     private CommentRepositoryInterface $commentRepository;

@@ -1,14 +1,29 @@
 <?php
 
+use Faker\Provider\Lorem;
+use Faker\Provider\ru_RU\Internet;
+use Faker\Provider\ru_RU\Person;
+use Faker\Provider\ru_RU\Text;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
-use PHP2\App\Authentication\AuthenticationInterface;
 use PHP2\App\Authentication\PasswordAuthentication;
 use PHP2\App\Authentication\PasswordAuthenticationInterface;
 use PHP2\App\Authentication\TokenAuthentication;
 use PHP2\App\Authentication\TokenAuthenticationInterface;
+use PHP2\App\Commands\CommentLikeCommand;
+use PHP2\App\Commands\CommentLikeCommandInterface;
 use PHP2\App\Commands\CreateAuthTokenCommand;
 use PHP2\App\Commands\CreateAuthTokenCommandInterface;
+use PHP2\App\Commands\CreateCommentCommand;
+use PHP2\App\Commands\CreateCommentCommandInterface;
+use PHP2\App\Commands\CreatePostCommand;
+use PHP2\App\Commands\CreatePostCommandInterface;
+use PHP2\App\Commands\CreatePostLikeCommand;
+use PHP2\App\Commands\CreatePostLikeCommandInterface;
+use PHP2\App\Commands\CreateUserCommand;
+use PHP2\App\Commands\CreateUserCommandInterface;
+use PHP2\App\Commands\DeletePostCommand;
+use PHP2\App\Commands\DeletePostCommandInterface;
 use PHP2\App\Connection\ConnectorInterface;
 use PHP2\App\Connection\SqLiteConnector;
 use PHP2\App\Container\DiContainer;
@@ -41,11 +56,26 @@ $container->bind(AuthTokenRepositoryInterface::class, AuthTokenRepository::class
 $container->bind(PasswordAuthenticationInterface::class, PasswordAuthentication::class);
 $container->bind(CreateAuthTokenCommandInterface::class, CreateAuthTokenCommand::class);
 $container->bind(TokenAuthenticationInterface::class,TokenAuthentication::class);
+$container->bind(CommentLikeCommandInterface::class,CommentLikeCommand::class);
+$container->bind(CreateCommentCommandInterface::class,CreateCommentCommand::class);
+$container->bind(CreatePostCommandInterface::class,CreatePostCommand::class);
+$container->bind(CreatePostLikeCommandInterface::class,CreatePostLikeCommand::class);
+$container->bind(CreateUserCommandInterface::class,CreateUserCommand::class);
+$container->bind(DeletePostCommandInterface::class,DeletePostCommand::class);
 $container->bind(LoggerInterface::class,
     (new Logger('php2_logger'))
         ->pushHandler(new StreamHandler(__DIR__ . '/../logs/blog.log'))
         ->pushHandler(new StreamHandler(__DIR__ . '/../logs/blog.error.log', $level = Logger::ERROR, $bubble = false,))
-        ->pushHandler(new StreamHandler("php://stdout"))
+//        ->pushHandler(new StreamHandler("php://stdout"))
 );
+
+$faker = new \Faker\Generator();
+
+$faker->addProvider(new Person($faker));
+$faker->addProvider(new Text($faker));
+$faker->addProvider(new Internet($faker));
+$faker->addProvider(new Lorem($faker));
+
+$container->bind(\Faker\Generator::class, $faker);
 
 return $container;

@@ -4,13 +4,9 @@ namespace PHP2\App\Handler\Blog;
 
 use PHP2\App\Argument\Argument;
 use PHP2\App\Authentication\TokenAuthenticationInterface;
-use PHP2\App\Commands\CreatePostLikeCommand;
-use PHP2\App\Connection\ConnectorInterface;
+use PHP2\App\Commands\CreatePostLikeCommandInterface;
 use PHP2\App\Exceptions\CommandException;
 use PHP2\App\Handler\HandlerInterface;
-use PHP2\App\Repositories\LikeRepositoryInterface;
-use PHP2\App\Repositories\PostRepositoryInterface;
-use PHP2\App\Repositories\UserRepositoryInterface;
 use PHP2\App\Request\Request;
 use PHP2\App\Response\ErrorResponse;
 use PHP2\App\Response\Response;
@@ -19,16 +15,14 @@ use Psr\Log\LoggerInterface;
 
 class CreatePostLikeFromRequest implements HandlerInterface
 {
-    private CreatePostLikeCommand $createPostLikeCommand;
+    private CreatePostLikeCommandInterface $createPostLikeCommand;
     private LoggerInterface $logger;
     private TokenAuthenticationInterface $tokenAuthentication;
 
-    public function __construct(PostRepositoryInterface $postRepository, UserRepositoryInterface $userRepository,
-                                LikeRepositoryInterface $likeRepository, ConnectorInterface $connector,
+    public function __construct(CreatePostLikeCommandInterface $createPostLikeCommand,
                                 LoggerInterface $logger, TokenAuthenticationInterface $tokenAuthentication)
     {
-        $this->createPostLikeCommand = new CreatePostLikeCommand($postRepository, $userRepository, $likeRepository,
-            $connector, $logger);
+        $this->createPostLikeCommand = $createPostLikeCommand;
         $this->logger = $logger;
         $this->tokenAuthentication = $tokenAuthentication;
     }

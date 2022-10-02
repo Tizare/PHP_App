@@ -11,7 +11,7 @@ use PHP2\App\Exceptions\PostNotFoundException;
 use PHP2\App\Repositories\PostRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
-class DeletePostCommand implements CreateCommandsInterface
+class DeletePostCommand implements DeletePostCommandInterface
 {
     private PostRepositoryInterface $postRepository;
     private PDO $connection;

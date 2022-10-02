@@ -12,7 +12,7 @@ use PHP2\App\Repositories\PostRepositoryInterface;
 use PHP2\App\Repositories\UserRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
-class CreateCommentCommand implements CreateCommandsInterface
+class CreateCommentCommand implements CreateCommentCommandInterface
 {
     private PostRepositoryInterface $postRepository;
     private UserRepositoryInterface $userRepository;
