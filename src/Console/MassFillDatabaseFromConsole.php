@@ -44,10 +44,12 @@ class MassFillDatabaseFromConsole extends Command
     {
         $this->setName('faker:fill-db')
             ->setDescription('Fill database with fake users, posts and comments for tests (10/10/100 default)')
-            ->addOption('count', 'ct', InputOption::VALUE_OPTIONAL, 'Count of users you want to create.
-            !BE CAREFUL Every user will create a post and make a comment to each post!')
-            ->addOption('count-post', 'ctp', InputOption::VALUE_OPTIONAL, "Count of posts you want to create.
-            !BE CAREFUL Every post will get a comment from each user!");
+            ->addOption('count', 'ct', InputOption::VALUE_OPTIONAL,
+                'Count of users you want to create.
+                !BE CAREFUL Every user will create a post and make a comment to each post!')
+            ->addOption('count-post', 'ctp', InputOption::VALUE_OPTIONAL,
+                "Count of posts you want to create.
+                !BE CAREFUL Every post will get a comment from each user!");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -71,24 +73,27 @@ class MassFillDatabaseFromConsole extends Command
         $output->writeln('We start to fill your base with fake data.');
         $io->progressStart($count + $count * $postCount + $count * $postCount * $count);
 
-        // создаём пользователей
+        $output->writeln(" -> We imagining users.");
         for ($i = 0; $i < $count; $i++) {
             $user = $this->createFakeUser();
             $users[] = $user;
             $io->progressAdvance();
         }
 
-        // от имени каждого создаем пост
+        $output->writeln(" -> We creating interesting posts from your users.");
         foreach ($users as $user) {
             for ($i = 0; $i < $postCount; $i++) {
                 $post = $this->createFakePost($user);
                 $posts[] = $post;
                 $io->progressAdvance();
-                $output->writeln("User ({$user->getUsername()} Id {$user->getId()}) created and write post '{$post->getTitle()}'");
+                $output->writeln(
+                    " ->  User ({$user->getUsername()} Id {$user->getId()}) created and write post '{$post->getTitle()}'"
+                );
             }
         }
 
-        // на каждый пост пишем комментарий от каждого пользователя
+        $output->writeln("We begin to commenting everything. Wait a minute.");
+
         foreach ($posts as $post) {
             foreach ($users as $user) {
                 $this->createFakeComment($user, $post);
@@ -134,9 +139,9 @@ class MassFillDatabaseFromConsole extends Command
     private function createFakeComment(User $user, Post $post): void
     {
         $argument = new Argument([
-            'userId' => $user->getId(),
+            'authUser' => $user->getId(),
             'postId' => $post->getId(),
-            'comment' => $this->faker->realText
+            'comment' => $this->faker->realText($maxNbChars = 100, $indexSize = 2)
         ]);
 
         $this->createCommentCommand->handle($argument);

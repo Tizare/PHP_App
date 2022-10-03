@@ -36,7 +36,7 @@ class CreateCommentCommand implements CreateCommentCommandInterface
     public function handle(Argument $argument): void
     {
         $this->logger->info("Begin create comment");
-        $userId = $argument->get('userId');
+        $userId = $argument->get('authUser');
         $postId = $argument->get('postId');
         $comment = $argument->get('comment');
 

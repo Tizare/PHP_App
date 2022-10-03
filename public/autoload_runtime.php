@@ -22,6 +22,8 @@ use PHP2\App\Commands\CreatePostLikeCommand;
 use PHP2\App\Commands\CreatePostLikeCommandInterface;
 use PHP2\App\Commands\CreateUserCommand;
 use PHP2\App\Commands\CreateUserCommandInterface;
+use PHP2\App\Commands\DeleteCommentCommand;
+use PHP2\App\Commands\DeleteCommentCommandInterface;
 use PHP2\App\Commands\DeletePostCommand;
 use PHP2\App\Commands\DeletePostCommandInterface;
 use PHP2\App\Connection\ConnectorInterface;
@@ -62,6 +64,7 @@ $container->bind(CreatePostCommandInterface::class,CreatePostCommand::class);
 $container->bind(CreatePostLikeCommandInterface::class,CreatePostLikeCommand::class);
 $container->bind(CreateUserCommandInterface::class,CreateUserCommand::class);
 $container->bind(DeletePostCommandInterface::class,DeletePostCommand::class);
+$container->bind(DeleteCommentCommandInterface::class, DeleteCommentCommand::class);
 $container->bind(LoggerInterface::class,
     (new Logger('php2_logger'))
         ->pushHandler(new StreamHandler(__DIR__ . '/../logs/blog.log'))

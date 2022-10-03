@@ -6,6 +6,8 @@ use PHP2\App\Argument\Argument;
 use PHP2\App\Commands\CreateUserCommand;
 use PHP2\App\Console\CreatePostFromConsole;
 use PHP2\App\Console\CreateUserFromConsole;
+use PHP2\App\Console\DeleteCommentFromConsole;
+use PHP2\App\Console\DeletePostFromConsole;
 use PHP2\App\Console\FindUserFromConsole;
 use PHP2\App\Console\MassFillDatabaseFromConsole;
 use PHP2\App\Exceptions\CommandException;
@@ -43,7 +45,9 @@ $commandClasses = [
     CreateUserFromConsole::class,
     FindUserFromConsole::class,
     CreatePostFromConsole::class,
-    MassFillDatabaseFromConsole::class
+    MassFillDatabaseFromConsole::class,
+    DeletePostFromConsole::class,
+    DeleteCommentFromConsole::class
 ];
 
 foreach ($commandClasses as $commandClass) {

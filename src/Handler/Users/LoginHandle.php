@@ -2,6 +2,7 @@
 
 namespace PHP2\App\Handler\Users;
 
+use DateTimeImmutable;
 use Exception;
 use PHP2\App\Authentication\PasswordAuthentication;
 use PHP2\App\Commands\CreateAuthTokenCommandInterface;
@@ -38,7 +39,7 @@ class LoginHandle implements HandlerInterface
         $authToken = new AuthToken(
             bin2hex(random_bytes(40)),
             $user,
-            (new \DateTimeImmutable())->modify('+1 day')
+            (new DateTimeImmutable())->modify('+1 day')
         );
 
         $this->createAuthTokenCommand->handle($authToken);

@@ -5,6 +5,7 @@ namespace Test\Console;
 
 use Monolog\Test\TestCase;
 use PHP2\App\Console\CreateUserFromConsole;
+use PHP2\App\Exceptions\NotFoundException;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -14,6 +15,9 @@ class CreateUserFromConsoleTest extends TestCase
 {
     use ContainerTrait;
 
+    /**
+     * @throws NotFoundException
+     */
     public function testItRequiresUsername(): void
     {
         $command = $this->getContainer()->get(CreateUserFromConsole::class);
@@ -28,6 +32,9 @@ class CreateUserFromConsoleTest extends TestCase
         ]), new NullOutput());
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function testItRequiresName(): void
     {
         $command = $this->getContainer()->get(CreateUserFromConsole::class);
@@ -42,6 +49,9 @@ class CreateUserFromConsoleTest extends TestCase
         ]), new NullOutput());
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function testItRequiresSurname(): void
     {
         $command = $this->getContainer()->get(CreateUserFromConsole::class);
@@ -56,6 +66,9 @@ class CreateUserFromConsoleTest extends TestCase
         ]), new NullOutput());
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function testItRequiresPassword(): void
     {
         $command = $this->getContainer()->get(CreateUserFromConsole::class);

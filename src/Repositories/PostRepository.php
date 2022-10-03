@@ -46,18 +46,18 @@ class PostRepository implements PostRepositoryInterface
     public function findPost(int $userId, string $title): Post
     {
         $statement = $this->connection->prepare(
-            'SELECT * FROM post WHERE user_id = :userID AND title = :title'
+            "SELECT * FROM post WHERE user_id = :userId AND title = :title"
         );
 
         $statement->execute([
             ':userId' => $userId,
-            'title' => $title
+            ':title' => $title
         ]);
 
         $postObj = $statement->fetch(PDO::FETCH_OBJ);
 
         if(!$postObj){
-            throw new PostNotFoundException("Post with title '$title' from user with is - $userId not found");
+            throw new PostNotFoundException("Post with title '$title' from user with id - $userId not found");
         }
         $post = new Post($postObj->title, $postObj->post);
         $post->setId($postObj->id)->setUserId($postObj->user_id);

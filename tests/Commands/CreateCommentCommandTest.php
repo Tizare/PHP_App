@@ -9,12 +9,13 @@ use PHP2\App\Connection\SqLiteConnector;
 use PHP2\App\Exceptions\ArgumentException;
 use PHP2\App\Exceptions\CommandException;
 use PHP2\App\Exceptions\PostNotFoundException;
-use PHP2\App\Repositories\DummyUsersRepository;
+use PHP2\App\Exceptions\UserNotFoundException;
 use PHP2\App\Repositories\PostRepositoryInterface;
 use PHP2\App\Repositories\UserRepositoryInterface;
 use PHP2\App\user\User;
 use PHPUnit\Framework\TestCase;
 use Test\DummyLogger;
+use Test\DummyUsersRepository;
 
 class CreateCommentCommandTest extends TestCase
 {
@@ -23,6 +24,11 @@ class CreateCommentCommandTest extends TestCase
         return new class implements PostRepositoryInterface {
 
             public function get(int $id): Post
+            {
+                throw new PostNotFoundException();
+            }
+
+            public function findPost(int $userId, string $title): Post
             {
                 throw new PostNotFoundException();
             }
@@ -36,6 +42,11 @@ class CreateCommentCommandTest extends TestCase
             public function get(int $id): Post
             {
                 return new Post('title', 'post');
+            }
+
+            public function findPost(int $userId, string $title): Post
+            {
+                throw new PostNotFoundException();
             }
         };
     }
@@ -51,7 +62,7 @@ class CreateCommentCommandTest extends TestCase
 
             public function getUserByUsername(string $username): User
             {
-                // TODO: Implement getUserByUsername() method.
+                throw new UserNotFoundException();
             }
         };
     }
@@ -101,6 +112,9 @@ class CreateCommentCommandTest extends TestCase
         ]));
     }
 
+    /**
+     * @throws CommandException
+     */
     public function testItRequiresUserId(): void
     {
         $command = new CreateCommentCommand($this->makePostRepository(), $this->makeUserRepository(),
@@ -116,6 +130,9 @@ class CreateCommentCommandTest extends TestCase
         ]));
     }
 
+    /**
+     * @throws CommandException
+     */
     public function testItRequiresPostId(): void
     {
         $command = new CreateCommentCommand($this->makePostRepository(), $this->makeUserRepository(),
@@ -131,6 +148,9 @@ class CreateCommentCommandTest extends TestCase
         ]));
     }
 
+    /**
+     * @throws CommandException
+     */
     public function testItRequiresComment(): void
     {
         $command = new CreateCommentCommand($this->makePostRepository(), $this->makeUserRepository(),
