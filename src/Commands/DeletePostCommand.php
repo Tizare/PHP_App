@@ -40,6 +40,8 @@ class DeletePostCommand implements DeletePostCommandInterface
             $this->logger->warning("This user $authUser can not delete this post $postId");
             throw new CommandException("This user can not delete this post");
         } else {
+            $this->deleteLikesToPostsComment($postId);
+
             $param = [':postId' => $postId];
 
             $statementFirst = $this->connection->prepare(
@@ -57,7 +59,7 @@ class DeletePostCommand implements DeletePostCommandInterface
             );
             $statement->execute($param);
 
-            $this->logger->info("Post $postId deleted with all comments");
+            $this->logger->info("Post $postId deleted with all comments and likes");
         }
     }
 
@@ -80,6 +82,21 @@ class DeletePostCommand implements DeletePostCommandInterface
             return true;
         }
         return false;
+    }
+
+    private function deleteLikesToPostsComment(string $postId): void
+    {
+        $statementFirst = $this->connection->prepare(
+            "SELECT id FROM comment WHERE post_id = :postId");
+        $statementFirst->execute([':postId' => $postId]);
+        $comments = $statementFirst->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($comments as $comment) {
+            $statement = $this->connection->prepare(
+                "DELETE FROM comment_like WHERE comment_id = :commentId"
+            );
+            $statement->execute([':commentId' => $comment['id']]);
+        }
     }
 
 }

@@ -57,7 +57,7 @@ class DeletePostFromConsole extends Command
             return Command::FAILURE;
         }
 
-        $output->writeln("Post $postId deleted with all comments");
+        $output->writeln("Post $postId deleted with all comments and likes");
         return Command::SUCCESS;
 
     }

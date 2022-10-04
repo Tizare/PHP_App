@@ -87,7 +87,7 @@ class MassFillDatabaseFromConsole extends Command
                 $posts[] = $post;
                 $io->progressAdvance();
                 $output->writeln(
-                    " ->  User ({$user->getUsername()} Id {$user->getId()}) created and write post '{$post->getTitle()}'"
+                    " -> User ({$user->getUsername()} Id {$user->getId()}) created and write post '{$post->getTitle()}'"
                 );
             }
         }

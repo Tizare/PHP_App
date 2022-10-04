@@ -15,25 +15,11 @@ use PHP2\App\Repositories\UserRepositoryInterface;
 use PHP2\App\user\User;
 use PHPUnit\Framework\TestCase;
 use Test\DummyLogger;
+use Test\DummyPostRepository;
 use Test\DummyUsersRepository;
 
 class CreateCommentCommandTest extends TestCase
 {
-    private function makePostRepositoryDummy(): PostRepositoryInterface
-    {
-        return new class implements PostRepositoryInterface {
-
-            public function get(int $id): Post
-            {
-                throw new PostNotFoundException();
-            }
-
-            public function findPost(int $userId, string $title): Post
-            {
-                throw new PostNotFoundException();
-            }
-        };
-    }
 
     private function makePostRepository(): PostRepositoryInterface
     {
@@ -69,14 +55,14 @@ class CreateCommentCommandTest extends TestCase
 
     public function testItThrowsAnExceptionWhenUserIdAndPostIdNotExist(): void
     {
-        $command = new CreateCommentCommand($this->makePostRepositoryDummy(), new DummyUsersRepository(),
+        $command = new CreateCommentCommand(new DummyPostRepository(), new DummyUsersRepository(),
             new SqLiteConnector((databaseConfig()['sqlite']['DATABASE_URL'])), new DummyLogger());
 
         $this->expectException(CommandException::class);
         $this->expectExceptionMessage("User with Id - 777 or Post with Id - 666 not found" );
 
         $command->handle(new Argument([
-            'userId' => '777',
+            'authUser' => '777',
             'postId' => '666',
             'comment' => 'comment'
         ]));
@@ -84,14 +70,14 @@ class CreateCommentCommandTest extends TestCase
 
     public function testItThrowsAnExceptionWhenUserIdExistButPostIdNotExist(): void
     {
-        $command = new CreateCommentCommand($this->makePostRepositoryDummy(), $this->makeUserRepository(),
+        $command = new CreateCommentCommand(new DummyPostRepository(), $this->makeUserRepository(),
             new SqLiteConnector((databaseConfig()['sqlite']['DATABASE_URL'])), new DummyLogger());
 
         $this->expectException(CommandException::class);
         $this->expectExceptionMessage("User with Id - 777 or Post with Id - 666 not found" );
 
         $command->handle(new Argument([
-            'userId' => '777',
+            'authUser' => '777',
             'postId' => '666',
             'comment' => 'comment'
         ]));
@@ -106,7 +92,7 @@ class CreateCommentCommandTest extends TestCase
         $this->expectExceptionMessage("User with Id - 777 or Post with Id - 666 not found" );
 
         $command->handle(new Argument([
-            'userId' => '777',
+            'authUser' => '777',
             'postId' => '666',
             'comment' => 'comment'
         ]));
@@ -115,13 +101,13 @@ class CreateCommentCommandTest extends TestCase
     /**
      * @throws CommandException
      */
-    public function testItRequiresUserId(): void
+    public function testItRequiresAuthUser(): void
     {
         $command = new CreateCommentCommand($this->makePostRepository(), $this->makeUserRepository(),
             new SqLiteConnector((databaseConfig()['sqlite']['DATABASE_URL'])), new DummyLogger());
 
         $this->expectException(ArgumentException::class);
-        $this->expectExceptionMessage("No such argument - userId");
+        $this->expectExceptionMessage("No such argument - authUser");
 
         $command->handle(new Argument([
             'user_Id' => '',
@@ -142,7 +128,7 @@ class CreateCommentCommandTest extends TestCase
         $this->expectExceptionMessage("No such argument - postId");
 
         $command->handle(new Argument([
-            'userId' => '777',
+            'authUser' => '777',
             'post_id' => '666',
             'comment' => 'comment'
         ]));
@@ -160,7 +146,7 @@ class CreateCommentCommandTest extends TestCase
         $this->expectExceptionMessage("No such argument - comment");
 
         $command->handle(new Argument([
-            'userId' => '777',
+            'authUser' => '777',
             'postId' => '666',
         ]));
     }

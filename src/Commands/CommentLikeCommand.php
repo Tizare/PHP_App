@@ -10,7 +10,6 @@ use PHP2\App\Exceptions\CommentNotFoundException;
 use PHP2\App\Exceptions\LikeException;
 use PHP2\App\Exceptions\UserNotFoundException;
 use PHP2\App\Repositories\CommentRepositoryInterface;
-use PHP2\App\Repositories\LikeRepository;
 use PHP2\App\Repositories\LikeRepositoryInterface;
 use PHP2\App\Repositories\UserRepositoryInterface;
 
@@ -18,7 +17,7 @@ class CommentLikeCommand implements CommentLikeCommandInterface
 {
     private UserRepositoryInterface $userRepository;
     private CommentRepositoryInterface $commentRepository;
-    private LikeRepository $likeRepository;
+    private LikeRepositoryInterface $likeRepository;
     private PDO $connection;
     private ConnectorInterface $connector;
 

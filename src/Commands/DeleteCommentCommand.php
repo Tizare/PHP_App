@@ -77,7 +77,7 @@ class DeleteCommentCommand implements DeleteCommentCommandInterface
 
     private function commentMayBeDeleted(Comment $comment, string $userId, string $postOwnerId): bool
     {
-        if($comment->getUserId() == $userId || $comment->getId() == $postOwnerId) {
+        if($comment->getUserId() == $userId || $comment->getUserId() == $postOwnerId) {
             return true;
         }
         return false;
