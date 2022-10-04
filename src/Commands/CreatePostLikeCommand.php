@@ -15,7 +15,7 @@ use PHP2\App\Repositories\UserRepositoryInterface;
 use PDO;
 use Psr\Log\LoggerInterface;
 
-class CreatePostLikeCommand implements CreateCommandsInterface
+class CreatePostLikeCommand implements CreatePostLikeCommandInterface
 {
     private PostRepositoryInterface $postRepository;
     private UserRepositoryInterface $userRepository;

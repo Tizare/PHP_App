@@ -3,13 +3,9 @@
 namespace PHP2\App\Handler\Blog;
 
 use PHP2\App\Argument\Argument;
-use PHP2\App\Commands\CommentLikeCommand;
-use PHP2\App\Connection\ConnectorInterface;
+use PHP2\App\Commands\CommentLikeCommandInterface;
 use PHP2\App\Exceptions\CommandException;
 use PHP2\App\Handler\HandlerInterface;
-use PHP2\App\Repositories\CommentRepositoryInterface;
-use PHP2\App\Repositories\LikeRepositoryInterface;
-use PHP2\App\Repositories\UserRepositoryInterface;
 use PHP2\App\Request\Request;
 use PHP2\App\Response\ErrorResponse;
 use PHP2\App\Response\Response;
@@ -18,14 +14,13 @@ use Psr\Log\LoggerInterface;
 
 class CommentLikeFromRequest implements HandlerInterface
 {
-    private CommentLikeCommand $commentLikeCommand;
+    private CommentLikeCommandInterface $commentLikeCommand;
     private LoggerInterface $logger;
 
-    public function __construct (UserRepositoryInterface $userRepository, CommentRepositoryInterface $commentRepository,
-                                 LikeRepositoryInterface $likeRepository, ConnectorInterface $connector,
+    public function __construct (CommentLikeCommandInterface $commentLikeCommand,
                                  LoggerInterface $logger)
     {
-        $this->commentLikeCommand = new CommentLikeCommand($userRepository, $commentRepository, $likeRepository, $connector);
+        $this->commentLikeCommand = $commentLikeCommand;
         $this->logger = $logger;
     }
 

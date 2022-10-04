@@ -2,7 +2,6 @@
 
 namespace PHP2\App\user;
 
-use DateTimeImmutable;
 use DateTimeInterface;
 
 class AuthToken

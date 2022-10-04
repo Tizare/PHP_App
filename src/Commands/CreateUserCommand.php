@@ -11,7 +11,7 @@ use PDO;
 use Psr\Log\LoggerInterface;
 
 
-class CreateUserCommand implements CreateCommandsInterface
+class CreateUserCommand implements CreateUserCommandInterface
 {
     private UserRepositoryInterface $userRepository;
     private PDO $connection;

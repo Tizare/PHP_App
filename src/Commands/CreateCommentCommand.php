@@ -12,7 +12,7 @@ use PHP2\App\Repositories\PostRepositoryInterface;
 use PHP2\App\Repositories\UserRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
-class CreateCommentCommand implements CreateCommandsInterface
+class CreateCommentCommand implements CreateCommentCommandInterface
 {
     private PostRepositoryInterface $postRepository;
     private UserRepositoryInterface $userRepository;
@@ -36,7 +36,7 @@ class CreateCommentCommand implements CreateCommandsInterface
     public function handle(Argument $argument): void
     {
         $this->logger->info("Begin create comment");
-        $userId = $argument->get('userId');
+        $userId = $argument->get('authUser');
         $postId = $argument->get('postId');
         $comment = $argument->get('comment');
 

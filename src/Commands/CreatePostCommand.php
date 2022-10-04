@@ -10,7 +10,7 @@ use PHP2\App\Exceptions\UserNotFoundException;
 use PHP2\App\Repositories\UserRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
-class CreatePostCommand implements CreateCommandsInterface
+class CreatePostCommand implements CreatePostCommandInterface
 {
     private UserRepositoryInterface $userRepository;
     private PDO $connection;

@@ -3,13 +3,11 @@
 namespace PHP2\App\Handler\Blog;
 
 use PHP2\App\Argument\Argument;
-use PHP2\App\Authentication\TokenAuthentication;
-use PHP2\App\Commands\CreateCommentCommand;
-use PHP2\App\Connection\ConnectorInterface;
+use PHP2\App\Authentication\TokenAuthenticationInterface;
+use PHP2\App\Commands\CreateCommentCommandInterface;
+use PHP2\App\Exceptions\AuthException;
 use PHP2\App\Exceptions\CommandException;
 use PHP2\App\Handler\HandlerInterface;
-use PHP2\App\Repositories\PostRepositoryInterface;
-use PHP2\App\Repositories\UserRepositoryInterface;
 use PHP2\App\Request\Request;
 use PHP2\App\Response\ErrorResponse;
 use PHP2\App\Response\Response;
@@ -18,22 +16,27 @@ use Psr\Log\LoggerInterface;
 
 class CreateCommentFromRequest implements HandlerInterface
 {
-    private CreateCommentCommand $createCommentCommand;
+    private CreateCommentCommandInterface $createCommentCommand;
     private LoggerInterface $logger;
+    private TokenAuthenticationInterface $tokenAuthentication;
 
-    public function __construct(UserRepositoryInterface $userRepository, PostRepositoryInterface $postRepository,
-                                ConnectorInterface $connector, LoggerInterface $logger)
+    public function __construct(CreateCommentCommandInterface $createCommentCommand,
+                                LoggerInterface $logger, TokenAuthenticationInterface $tokenAuthentication)
     {
-        $this->createCommentCommand = new CreateCommentCommand($postRepository, $userRepository, $connector, $logger);
+        $this->createCommentCommand = $createCommentCommand;
         $this->logger = $logger;
+        $this->tokenAuthentication = $tokenAuthentication;
     }
 
     public function handle(Request $request): Response
     {
-        /** TODO: make comment from authen */
+
         try {
-            $this->createCommentCommand->handle(new Argument($request->jsonBody()));
-        } catch (CommandException $exception) {
+            $author = $this->tokenAuthentication->user($request);
+            $comment = $request->jsonBody();
+            $comment['authUser'] = $author->getId();
+            $this->createCommentCommand->handle(new Argument($comment));
+        } catch (CommandException|AuthException $exception) {
             $this->logger->warning($exception->getMessage());
             return new ErrorResponse($exception->getMessage());
         }

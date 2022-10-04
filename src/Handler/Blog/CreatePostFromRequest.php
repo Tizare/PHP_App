@@ -4,12 +4,10 @@ namespace PHP2\App\Handler\Blog;
 
 use PHP2\App\Argument\Argument;
 use PHP2\App\Authentication\TokenAuthenticationInterface;
-use PHP2\App\Commands\CreatePostCommand;
-use PHP2\App\Connection\ConnectorInterface;
+use PHP2\App\Commands\CreatePostCommandInterface;
 use PHP2\App\Exceptions\AuthException;
 use PHP2\App\Exceptions\CommandException;
 use PHP2\App\Handler\HandlerInterface;
-use PHP2\App\Repositories\UserRepositoryInterface;
 use PHP2\App\Request\Request;
 use PHP2\App\Response\ErrorResponse;
 use PHP2\App\Response\Response;
@@ -18,14 +16,14 @@ use Psr\Log\LoggerInterface;
 
 class CreatePostFromRequest implements HandlerInterface
 {
-    private CreatePostCommand $createPostCommand;
+    private CreatePostCommandInterface $createPostCommand;
     private LoggerInterface $logger;
     private TokenAuthenticationInterface $tokenAuthentication;
 
-    public function __construct(UserRepositoryInterface $userRepository, ConnectorInterface $connector,
+    public function __construct(CreatePostCommandInterface $createPostCommand,
                                 LoggerInterface $logger, TokenAuthenticationInterface $tokenAuthentication)
     {
-        $this->createPostCommand = new CreatePostCommand($userRepository, $connector, $logger);
+        $this->createPostCommand = $createPostCommand;
         $this->logger = $logger;
         $this->tokenAuthentication = $tokenAuthentication;
     }

@@ -38,7 +38,7 @@ class UserRepository implements UserRepositoryInterface
         $statement->execute([
             ':userId' => $id
         ]);
-        $userObj = $statement->fetch(\PDO::FETCH_OBJ);
+        $userObj = $statement->fetch(PDO::FETCH_OBJ);
 
         if(!$userObj) {
             throw new UserNotFoundException("User with id - $id not found" . PHP_EOL);

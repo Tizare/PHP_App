@@ -29,7 +29,7 @@ class FindByUserNameHandlerTest extends TestCase
 
             public function get(int $id): User
             {
-                //
+                throw new UserNotFoundException();
             }
 
             public function getUserByUsername(string $username): User

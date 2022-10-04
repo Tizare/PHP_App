@@ -3,11 +3,9 @@
 namespace PHP2\App\Handler\Users;
 
 use PHP2\App\Argument\Argument;
-use PHP2\App\Commands\CreateUserCommand;
-use PHP2\App\Connection\ConnectorInterface;
+use PHP2\App\Commands\CreateUserCommandInterface;
 use PHP2\App\Exceptions\CommandException;
 use PHP2\App\Handler\HandlerInterface;
-use PHP2\App\Repositories\UserRepositoryInterface;
 use PHP2\App\Request\Request;
 use PHP2\App\Response\ErrorResponse;
 use PHP2\App\Response\Response;
@@ -16,13 +14,12 @@ use Psr\Log\LoggerInterface;
 
 class CreateUserFromRequest implements HandlerInterface
 {
-    private CreateUserCommand $createUserCommand;
+    private CreateUserCommandInterface $createUserCommand;
     private LoggerInterface $logger;
 
-    public function __construct(UserRepositoryInterface $userRepository, ConnectorInterface $connector,
-                                LoggerInterface $logger)
+    public function __construct(CreateUserCommandInterface $createUserCommand, LoggerInterface $logger)
     {
-        $this->createUserCommand = new CreateUserCommand($userRepository, $connector, $logger);
+        $this->createUserCommand = $createUserCommand;
         $this->logger = $logger;
     }
 
