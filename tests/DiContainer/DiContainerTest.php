@@ -9,12 +9,16 @@ use PHP2\App\blog\ClassWithoutDependencies;
 use PHP2\App\Connection\ConnectorInterface;
 use PHP2\App\Connection\SqLiteConnector;
 use PHP2\App\Container\DiContainer;
+use PHP2\App\Exceptions\NotFoundException;
 use PHP2\App\Repositories\UserRepository;
 use PHP2\App\Repositories\UserRepositoryInterface;
 use PHPUnit\Framework\TestCase;
 
 class DiContainerTest extends TestCase
 {
+    /**
+     * @throws NotFoundException
+     */
     public function testItResolveClassWithoutDependencies()
     {
         $container = new DiContainer();
@@ -25,6 +29,9 @@ class DiContainerTest extends TestCase
 
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function testItResolveClassWithParameter()
     {
         $container = new DiContainer();
@@ -34,6 +41,9 @@ class DiContainerTest extends TestCase
         $this->assertInstanceOf(ClassWithDependencies::class, $object);
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function testItResolveClassWithRightParameter()
     {
         $container = new DiContainer();
@@ -43,6 +53,9 @@ class DiContainerTest extends TestCase
         $this->assertSame(333, $object->getValue());
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function testItResolveClassWithAnotherClassWithRightParameter()
     {
         $container = new DiContainer();
@@ -52,6 +65,9 @@ class DiContainerTest extends TestCase
         $this->assertSame("это значение 555Спасибо за внимание.", $object->getValue());
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function testItResolveClassOnInterface()
     {
         $container = new DiContainer();

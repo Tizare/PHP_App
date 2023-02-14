@@ -3,7 +3,6 @@
 namespace PHP2\App\Handler\Users;
 
 use DateTime;
-use Monolog\Logger;
 use PHP2\App\Exceptions\HttpException;
 use PHP2\App\Exceptions\UserNotFoundException;
 use PHP2\App\Handler\HandlerInterface;

@@ -22,7 +22,7 @@ class LikeRepository implements LikeRepositoryInterface
         $this->commentRepository = $commentRepository;
     }
 
-    public function mapLike(object $likeObj): Like
+    private function mapLike(object $likeObj): Like
     {
         if(property_exists($likeObj, 'post_id')){
             $like = new Like($likeObj->user_id, $likeObj->post_id);

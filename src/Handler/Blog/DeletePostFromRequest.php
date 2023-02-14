@@ -4,12 +4,10 @@ namespace PHP2\App\Handler\Blog;
 
 use PHP2\App\Argument\Argument;
 use PHP2\App\Authentication\TokenAuthenticationInterface;
-use PHP2\App\Commands\DeletePostCommand;
-use PHP2\App\Connection\ConnectorInterface;
+use PHP2\App\Commands\DeletePostCommandInterface;
 use PHP2\App\Exceptions\CommandException;
 use PHP2\App\Exceptions\HttpException;
 use PHP2\App\Handler\HandlerInterface;
-use PHP2\App\Repositories\PostRepositoryInterface;
 use PHP2\App\Request\Request;
 use PHP2\App\Response\ErrorResponse;
 use PHP2\App\Response\Response;
@@ -18,14 +16,14 @@ use Psr\Log\LoggerInterface;
 
 class DeletePostFromRequest implements HandlerInterface
 {
-    private DeletePostCommand $deletePostCommand;
+    private DeletePostCommandInterface $deletePostCommand;
     private LoggerInterface $logger;
     private TokenAuthenticationInterface $tokenAuthentication;
 
-    public function __construct(PostRepositoryInterface $postRepository, ConnectorInterface $connector,
+    public function __construct(DeletePostCommandInterface $deletePostCommand,
                                 LoggerInterface $logger, TokenAuthenticationInterface $tokenAuthentication)
     {
-        $this->deletePostCommand = new DeletePostCommand($postRepository, $connector, $logger);
+        $this->deletePostCommand = $deletePostCommand;
         $this->logger = $logger;
         $this->tokenAuthentication = $tokenAuthentication;
     }

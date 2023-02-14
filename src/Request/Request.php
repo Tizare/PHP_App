@@ -10,14 +10,12 @@ class Request
     private array $get;
     private string $post;
     private array $server;
-    private array $cookies;
 
-    public function __construct(array $get = [], array $server = [], string $post = '',  array $cookies = [])
+    public function __construct(array $get = [], array $server = [], string $post = '')
     {
         $this->get = $get;
         $this->server = $server;
         $this->post = $post;
-        $this->cookies = $cookies;
     }
 
     /**
