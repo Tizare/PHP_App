@@ -1,17 +1,18 @@
 <?php
 
-require_once __DIR__ . '\autoload_runtime.php';
+$container = require_once __DIR__ . '\autoload_runtime.php';
 
 use PHP2\App\Argument\Argument;
-use PHP2\App\blog\Post;
-use PHP2\App\blog\Comment;
-use PHP2\App\Commands\CreatePostCommand;
 use PHP2\App\Commands\CreateUserCommand;
+use PHP2\App\Console\CreatePostFromConsole;
+use PHP2\App\Console\CreateUserFromConsole;
+use PHP2\App\Console\DeleteCommentFromConsole;
+use PHP2\App\Console\DeletePostFromConsole;
+use PHP2\App\Console\FindUserFromConsole;
+use PHP2\App\Console\MassFillDatabaseFromConsole;
 use PHP2\App\Exceptions\CommandException;
-use PHP2\App\Repositories\CommentRepository;
-use PHP2\App\Repositories\PostRepository;
-use PHP2\App\Repositories\UserRepository;
-use PHP2\App\user\User;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Application;
 
 //$faker = Faker\Factory::create();
 //
@@ -29,31 +30,30 @@ use PHP2\App\user\User;
 //    }
 //}
 
-$userRepository = new UserRepository();
-$postRepository = new PostRepository();
-//$commentRepository = new CommentRepository();
-////$user = new User('Las', 'Vasy', 'Pupkin');
-////$userRepository->save($user);
+//$command = $container->get(CreateUserCommand::class);
+//$logger = $container->get(LoggerInterface::class);
 //
-//$user = $userRepository->get(2);
-//
-////$post = new Post("Some news", "Bla-bla-bla and bla-bla and Bla-bla!");
-////$postRepository->save($user, $post);
-//
-//$post = $postRepository->get(1);
-//
-//$comment = new Comment('Wow!');
-//$commentRepository->save($user, $post, $comment);
-//
-//var_dump($comment);
-//die();
+//try {
+//    $command->handle(Argument::fromArgv($argv));
+//    echo "done" . PHP_EOL;
+//} catch (CommandException $commandException) {
+//    $logger->error($commandException->getMessage(), ['exception' => $commandException]);
+//}
 
-$command = new CreateUserCommand($userRepository);
-$command2 = new CreatePostCommand($postRepository, $userRepository);
+$application = new Application();
+$commandClasses = [
+    CreateUserFromConsole::class,
+    FindUserFromConsole::class,
+    CreatePostFromConsole::class,
+    MassFillDatabaseFromConsole::class,
+    DeletePostFromConsole::class,
+    DeleteCommentFromConsole::class
+];
 
-try {
-    $command2->handle(Argument::fromArgv($argv));
-    echo "done" . PHP_EOL;
-} catch (CommandException $commandException) {
-    echo $commandException->getMessage();
+foreach ($commandClasses as $commandClass) {
+    $command = $container->get($commandClass);
+    $application->add($command);
 }
+
+$application->run();
+
