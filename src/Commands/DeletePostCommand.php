@@ -4,13 +4,14 @@ namespace PHP2\App\Commands;
 
 use PDO;
 use PHP2\App\Argument\Argument;
+use PHP2\App\blog\Post;
 use PHP2\App\Connection\ConnectorInterface;
 use PHP2\App\Exceptions\CommandException;
 use PHP2\App\Exceptions\PostNotFoundException;
 use PHP2\App\Repositories\PostRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
-class DeletePostCommand implements CreateCommandsInterface
+class DeletePostCommand implements DeletePostCommandInterface
 {
     private PostRepositoryInterface $postRepository;
     private PDO $connection;
@@ -32,28 +33,70 @@ class DeletePostCommand implements CreateCommandsInterface
     {
         $this->logger->info("Begin delete Post");
         $postId = $argument->get('postId');
+        $authUser = $argument->get('authUser');
 
-        // TODO: - удаление комментов к посту!
-
-        if ($this->postNotExist($postId)) {
-            throw new CommandException("Post with Id - $postId not exist." . PHP_EOL);
+        $post = $this->postExist($postId);
+        if (!$this->postMayBeDeleted($post, $authUser)) {
+            $this->logger->warning("This user $authUser can not delete this post $postId");
+            throw new CommandException("This user can not delete this post");
         } else {
+            $this->deleteLikesToPostsComment($postId);
+
+            $param = [':postId' => $postId];
+
+            $statementFirst = $this->connection->prepare(
+                "DELETE FROM comment WHERE post_id = :postId"
+            );
+            $statementFirst->execute($param);
+
+            $statementSecond = $this->connection->prepare(
+                'DELETE FROM post_like WHERE post_id = :postId'
+            );
+            $statementSecond->execute($param);
+
             $statement = $this->connection->prepare(
                 "DELETE FROM post WHERE id = :postId"
             );
-            $statement->execute([':postId' => $postId]);
-            $this->logger->info("Post $postId deleted");
+            $statement->execute($param);
+
+            $this->logger->info("Post $postId deleted with all comments and likes");
         }
     }
 
-    private function postNotExist(string $postId): bool
+    /**
+     * @throws CommandException
+     */
+    private function postExist(string $postId): Post
     {
         try {
-            $this->postRepository->get($postId);
+            $post = $this->postRepository->get($postId);
         } catch (PostNotFoundException $exception) {
+            throw new CommandException("Post with Id - $postId not exist.");
+        }
+        return $post;
+    }
+
+    private function postMayBeDeleted(Post $post, string $userId): bool
+    {
+        if ($post->getUserId() == $userId) {
             return true;
         }
         return false;
+    }
+
+    private function deleteLikesToPostsComment(string $postId): void
+    {
+        $statementFirst = $this->connection->prepare(
+            "SELECT id FROM comment WHERE post_id = :postId");
+        $statementFirst->execute([':postId' => $postId]);
+        $comments = $statementFirst->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($comments as $comment) {
+            $statement = $this->connection->prepare(
+                "DELETE FROM comment_like WHERE comment_id = :commentId"
+            );
+            $statement->execute([':commentId' => $comment['id']]);
+        }
     }
 
 }

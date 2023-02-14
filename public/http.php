@@ -11,7 +11,9 @@ use PHP2\App\Handler\Blog\DeletePostFromRequest;
 use PHP2\App\Handler\Blog\FindLikesByCommentId;
 use PHP2\App\Handler\Blog\FindLikesByPostId;
 use PHP2\App\Handler\Blog\FindPostById;
+use PHP2\App\Handler\Users\CreateUserFromRequest;
 use PHP2\App\Handler\Users\FindByUserName;
+use PHP2\App\Handler\Users\LoginHandle;
 use PHP2\App\Request\Request;
 use PHP2\App\Exceptions\HttpException;
 use PHP2\App\Response\ErrorResponse;
@@ -48,7 +50,9 @@ $routes = [
         '/post/create' => CreatePostFromRequest::class,
         '/post/comment' => CreateCommentFromRequest::class,
         '/post/like'=> CreatePostLikeFromRequest::class,
-        '/post/comment/like' => CommentLikeFromRequest::class
+        '/post/comment/like' => CommentLikeFromRequest::class,
+        '/user/create' => CreateUserFromRequest::class,
+        '/login' => LoginHandle::class
     ],
     'DELETE' => [
         '/post' => DeletePostFromRequest::class,

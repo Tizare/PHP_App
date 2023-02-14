@@ -15,7 +15,7 @@ use PHP2\App\Repositories\UserRepositoryInterface;
 use PDO;
 use Psr\Log\LoggerInterface;
 
-class CreatePostLikeCommand implements CreateCommandsInterface
+class CreatePostLikeCommand implements CreatePostLikeCommandInterface
 {
     private PostRepositoryInterface $postRepository;
     private UserRepositoryInterface $userRepository;
@@ -41,7 +41,7 @@ class CreatePostLikeCommand implements CreateCommandsInterface
     public function handle(Argument $argument): void
     {
         $this->logger->info("Begin create Post Like");
-        $userId = $argument->get('userId');
+        $userId = $argument->get('authUser');
         $postId = $argument->get('postId');
 
         if ($this->likeExist($postId, $userId)) {

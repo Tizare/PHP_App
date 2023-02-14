@@ -8,12 +8,11 @@ use PHP2\App\Connection\SqLiteConnector;
 use PHP2\App\Exceptions\ArgumentException;
 use PHP2\App\Exceptions\CommandException;
 use PHP2\App\Exceptions\UserNotFoundException;
-use PHP2\App\Repositories\DummyUsersRepository;
 use PHP2\App\Repositories\UserRepositoryInterface;
 use PHP2\App\user\User;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 use Test\DummyLogger;
+use Test\DummyUsersRepository;
 
 class CreateUserCommandTest extends TestCase
 {
@@ -28,7 +27,8 @@ class CreateUserCommandTest extends TestCase
         $command->handle(new Argument([
                 'username' => 'Ivan',
                 'name' => 'name',
-                'surname' => 'surname'
+                'surname' => 'surname',
+                'password' => 'password'
             ]));
     }
 
@@ -38,7 +38,7 @@ class CreateUserCommandTest extends TestCase
 
             public function get(int $id): User
             {
-                // TODO: Implement get() method.
+                throw new UserNotFoundException();
             }
 
             public function getUserByUsername(string $username): User
@@ -48,6 +48,9 @@ class CreateUserCommandTest extends TestCase
         };
     }
 
+    /**
+     * @throws CommandException
+     */
     public function testItRequiresUsername(): void
     {
         $command = new CreateUserCommand($this->makeUsersRepository(),
@@ -59,10 +62,14 @@ class CreateUserCommandTest extends TestCase
         $command->handle(new Argument([
             'user' => 'Ivan',
             'name' => 'name',
-            'surname' => 'surname'
+            'surname' => 'surname',
+            'password' => 'password'
         ]));
     }
 
+    /**
+     * @throws CommandException
+     */
     public function testItRequiresName(): void
     {
         $command = new CreateUserCommand($this->makeUsersRepository(),
@@ -73,10 +80,14 @@ class CreateUserCommandTest extends TestCase
 
         $command->handle(new Argument([
             'username' => 'Ivan',
-            'surname' => 'surname'
+            'surname' => 'surname',
+            'password' => 'password'
         ]));
     }
 
+    /**
+     * @throws CommandException
+     */
     public function testItRequiresSurname(): void
     {
         $command = new CreateUserCommand($this->makeUsersRepository(),
@@ -88,6 +99,25 @@ class CreateUserCommandTest extends TestCase
         $command->handle(new Argument([
             'name' => 'name',
             'username' => 'Ivan',
+            'password' => 'password'
+        ]));
+    }
+
+    /**
+     * @throws CommandException
+     */
+    public function testItRequiresPassword(): void
+    {
+        $command = new CreateUserCommand($this->makeUsersRepository(),
+            new SqLiteConnector((databaseConfig()['sqlite']['DATABASE_URL'])), new DummyLogger());
+
+        $this->expectException(ArgumentException::class);
+        $this->expectExceptionMessage("No such argument - password");
+
+        $command->handle(new Argument([
+            'username' => 'Ivan',
+            'name' => 'name',
+            'surname' => 'surname',
         ]));
     }
 

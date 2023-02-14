@@ -1,8 +1,9 @@
 <?php
 
-namespace PHP2\App\Repositories;
+namespace Test;
 
 use PHP2\App\Exceptions\UserNotFoundException;
+use PHP2\App\Repositories\UserRepositoryInterface;
 use PHP2\App\user\User;
 
 class DummyUsersRepository implements UserRepositoryInterface
@@ -18,6 +19,6 @@ class DummyUsersRepository implements UserRepositoryInterface
 
     public function getUserByUsername(string $username): User
     {
-        return new User('username', 'name', 'surname');
+        return new User('username', 'name', 'surname', 'password');
     }
 }

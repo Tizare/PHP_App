@@ -29,7 +29,7 @@ class FindByUserNameHandlerTest extends TestCase
 
             public function get(int $id): User
             {
-                //
+                throw new UserNotFoundException();
             }
 
             public function getUserByUsername(string $username): User
@@ -103,7 +103,7 @@ class FindByUserNameHandlerTest extends TestCase
     {
         $request = new Request(['username' => 'ivan'], [], '');
 
-        $usersRepository = $this->usersRepository([new User('ivan', 'Ivan', 'Nikitin')]);
+        $usersRepository = $this->usersRepository([new User('ivan', 'Ivan', 'Nikitin', 'password')]);
         $dummyLogger = new DummyLogger();
 
         $action = new FindByUserName($usersRepository, $dummyLogger);
