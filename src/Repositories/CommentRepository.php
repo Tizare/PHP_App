@@ -48,7 +48,7 @@ class CommentRepository implements CommentRepositoryInterface
         $commentObj = $statement->fetch(PDO::FETCH_OBJ);
 
         if(!$commentObj){
-            throw new CommentNotFoundException("Comment with such id - $id not found");
+            throw new CommentNotFoundException("Comment with such id - $id not found" . PHP_EOL);
         };
 
         $comment = new Comment($commentObj->commetn);

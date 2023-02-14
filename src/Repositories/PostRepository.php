@@ -6,34 +6,16 @@ use PHP2\App\blog\Post;
 use PHP2\App\Connection\ConnectorInterface;
 use PHP2\App\Connection\SqLiteConnector;
 use PHP2\App\Exceptions\PostNotFoundException;
-use PHP2\App\user\User;
 
 class PostRepository implements PostRepositoryInterface
 {
     private PDO $connection;
-    private ?ConnectorInterface  $connector = null;
+    private ?ConnectorInterface  $connector;
 
     public function __construct()
     {
         $this->connector = $connector ?? new SqLiteConnector();
         $this->connection = $this->connector->getConnection();
-    }
-
-    public function save(User $user, Post $post): void
-    {
-       $statement = $this->connection->prepare(
-           'INSERT INTO post (user_id, title, post) 
-                  VALUES (:user_id, :title, :post)'
-       );
-
-       $statement->execute(
-           [
-               ':user_id' => $user->getId(),
-               ':title' => $post->getTitle(),
-               ':post' => $post->getPost()
-           ]
-       );
-
     }
 
     /**
@@ -50,7 +32,7 @@ class PostRepository implements PostRepositoryInterface
         $postObj = $statement->fetch(PDO::FETCH_OBJ);
 
         if(!$postObj){
-            throw new PostNotFoundException("Post with such id - $id not found");
+            throw new PostNotFoundException("Post with such id - $id not found" . PHP_EOL);
         }
 
         $post = new Post($postObj->title, $postObj->post);
