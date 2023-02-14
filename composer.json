@@ -4,7 +4,10 @@
     "autoload": {
         "psr-4": {
             "PHP2\\App\\": "src/"
-        }
+        },
+        "files": [
+            "database/config.php"
+        ]
     },
     "authors": [
         {
@@ -12,6 +15,7 @@
         }
     ],
     "require": {
-        "fakerphp/faker": "^1.20"
+        "fakerphp/faker": "^1.20",
+        "ext-pdo": "*"
     }
 }
