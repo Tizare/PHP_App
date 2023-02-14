@@ -1,8 +1,6 @@
 <?php
 
 namespace PHP2\App\blog;
-use PHP2\App\blog\ClassWithDependencies;
-use PHP2\App\blog\ClassWithoutDependencies;
 
 class ClassWithOtherClass
 {

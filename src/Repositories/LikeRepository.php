@@ -4,11 +4,8 @@ namespace PHP2\App\Repositories;
 
 use PHP2\App\blog\Like;
 use PHP2\App\Connection\ConnectorInterface;
-use PHP2\App\Connection\SqLiteConnector;
 use PDO;
 use PHP2\App\Exceptions\LikeException;
-use PHP2\App\Exceptions\PostNotFoundException;
-use PHP2\App\Response\ErrorResponse;
 
 class LikeRepository implements LikeRepositoryInterface
 {
@@ -17,15 +14,15 @@ class LikeRepository implements LikeRepositoryInterface
     private PostRepositoryInterface $postRepository;
     private CommentRepositoryInterface $commentRepository;
 
-    public function __construct(?ConnectorInterface $connector = null)
+    public function __construct(ConnectorInterface $connector, PostRepositoryInterface $postRepository, CommentRepositoryInterface $commentRepository)
     {
-        $this->connector = $connector ?? new SqLiteConnector();
+        $this->connector = $connector;
         $this->connection = $this->connector->getConnection();
-        $this->postRepository = new PostRepository();
-        $this->commentRepository = new CommentRepository();
+        $this->postRepository = $postRepository;
+        $this->commentRepository = $commentRepository;
     }
 
-    public function mapLike(object $likeObj): Like
+    private function mapLike(object $likeObj): Like
     {
         if(property_exists($likeObj, 'post_id')){
             $like = new Like($likeObj->user_id, $likeObj->post_id);
@@ -79,6 +76,9 @@ class LikeRepository implements LikeRepositoryInterface
         return $likeObj;
     }
 
+    /**
+     * @throws LikeException
+     */
     public function getLikesToComment(int $commentId): array
     {
         $this->commentRepository->get($commentId);

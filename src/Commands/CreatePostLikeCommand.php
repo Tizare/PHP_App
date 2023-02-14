@@ -4,33 +4,35 @@ namespace PHP2\App\Commands;
 
 use PHP2\App\Argument\Argument;
 use PHP2\App\Connection\ConnectorInterface;
-use PHP2\App\Connection\SqLiteConnector;
 use PHP2\App\Exceptions\CommandException;
 use PHP2\App\Exceptions\LikeException;
 use PHP2\App\Exceptions\PostNotFoundException;
 use PHP2\App\Exceptions\UserNotFoundException;
 use PHP2\App\Repositories\LikeRepository;
-use PHP2\App\Repositories\PostRepository;
+use PHP2\App\Repositories\LikeRepositoryInterface;
 use PHP2\App\Repositories\PostRepositoryInterface;
-use PHP2\App\Repositories\UserRepository;
 use PHP2\App\Repositories\UserRepositoryInterface;
 use PDO;
+use Psr\Log\LoggerInterface;
 
-class CreatePostLikeCommand implements CreateCommandsInterface
+class CreatePostLikeCommand implements CreatePostLikeCommandInterface
 {
     private PostRepositoryInterface $postRepository;
     private UserRepositoryInterface $userRepository;
     private LikeRepository $likeRepository;
     private PDO $connection;
     private ?ConnectorInterface $connector;
+    private LoggerInterface $logger;
 
-    public function __construct(PostRepositoryInterface $postRepository = null, UserRepositoryInterface $userRepository = null)
+    public function __construct(PostRepositoryInterface $postRepository, UserRepositoryInterface $userRepository,
+                                LikeRepositoryInterface $likeRepository, ConnectorInterface $connector, LoggerInterface $logger)
     {
-        $this->postRepository = $postRepository ?? new PostRepository();
-        $this->userRepository = $userRepository ?? new UserRepository();
-        $this->likeRepository = new LikeRepository();
-        $this->connector = $connector ?? new SqLiteConnector();
+        $this->postRepository = $postRepository;
+        $this->userRepository = $userRepository;
+        $this->likeRepository = $likeRepository;
+        $this->connector = $connector;
         $this->connection = $this->connector->getConnection();
+        $this->logger = $logger;
     }
 
     /**
@@ -38,7 +40,8 @@ class CreatePostLikeCommand implements CreateCommandsInterface
      */
     public function handle(Argument $argument): void
     {
-        $userId = $argument->get('userId');
+        $this->logger->info("Begin create Post Like");
+        $userId = $argument->get('authUser');
         $postId = $argument->get('postId');
 
         if ($this->likeExist($postId, $userId)) {
@@ -46,7 +49,7 @@ class CreatePostLikeCommand implements CreateCommandsInterface
         }
 
         if ($this->userIdNotExist($userId) || $this->postIdNotExist($postId)) {
-            throw new CommandException("User with Id - $userId or Post with Id - $postId not found" . PHP_EOL);
+            throw new CommandException("User with Id - $userId or Post with Id - $postId not found");
         } else {
             $statement = $this->connection->prepare(
                 'INSERT INTO post_like (post_id, user_id) 
@@ -56,6 +59,7 @@ class CreatePostLikeCommand implements CreateCommandsInterface
                 ':post_id' => $postId,
                 ':user_id' => $userId,
             ]);
+            $this->logger->info("Created Post Like (postId = $postId, userId = $userId)");
         }
     }
 
